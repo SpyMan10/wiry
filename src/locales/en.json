@@ -1,0 +1,86 @@
+{
+  "app": {
+    "connecting": "Connecting to PipeWire…"
+  },
+  "panels": {
+    "nodes": "Nodes",
+    "connections": "Connections"
+  },
+  "fold": {
+    "collapse": "Collapse panel",
+    "expand": "Expand “{label}”"
+  },
+  "nodeList": {
+    "filter": "Filter…",
+    "clear": "Clear",
+    "monitors": "monitors",
+    "monitorsTitle": "Show monitor ports",
+    "armedPort": "Port “{port}” selected: click a compatible {direction} port (Shift to chain).",
+    "directionInput": "input",
+    "directionOutput": "output",
+    "armedNode": "Node selected: click “Connect here” on a destination.",
+    "cancel": "Cancel (Esc)",
+    "connectHere": "Connect here",
+    "link": "Link",
+    "linkTitle": "Connect all outputs of this node to another node",
+    "portClickToDisconnect": "click to disconnect",
+    "empty": "No nodes.",
+    "collapseGroup": "Collapse group",
+    "expandGroup": "Expand group"
+  },
+  "graph": {
+    "showAll": "show all",
+    "empty": "No connections. Select a port in the list to create one.",
+    "wireTitle": "Click to disconnect"
+  },
+  "volume": {
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "channels": "Channels",
+    "channelFallback": "CH{n}",
+    "edit": "Click to type a value"
+  },
+  "ports": {
+    "monitor": "monitor {channel}"
+  },
+  "categories": {
+    "sink": "Audio outputs",
+    "source": "Audio inputs",
+    "playback": "Apps · playback",
+    "recording": "Apps · recording",
+    "midi": "MIDI",
+    "video": "Video",
+    "other": "Other"
+  },
+  "nodeTypes": {
+    "application": "Application",
+    "hardware": "Hardware device",
+    "virtual": "Virtual",
+    "midi": "MIDI",
+    "video": "Video",
+    "input": "Input (capture)",
+    "output": "Output (playback)"
+  },
+  "properties": {
+    "empty": "Select a node to see its properties.",
+    "noMatch": "No matching property.",
+    "filter": "Filter properties…"
+  },
+  "bottom": {
+    "properties": "Properties",
+    "alsa": "ALSA",
+    "collapse": "Collapse panel",
+    "expand": "Expand panel"
+  },
+  "alsa": {
+    "card": "Sound card",
+    "playback": "Playback",
+    "capture": "Capture",
+    "noCards": "No sound card found.",
+    "noControls": "This card has no mixer controls.",
+    "switchOn": "On",
+    "switchOff": "Off",
+    "mute": "Mute",
+    "unmute": "Unmute"
+  }
+}

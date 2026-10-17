@@ -1,0 +1,7 @@
+tab_spaces = 2
+trailing_comma = "Never"
+trailing_semicolon = false
+imports_granularity = "Module"
+group_imports = "StdExternalCrate"
+imports_layout = "Vertical"
+max_width = 120
