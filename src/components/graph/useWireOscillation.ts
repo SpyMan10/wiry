@@ -1,6 +1,6 @@
 import { RefObject, useEffect } from "react";
 import { peakToUnit, subscribeLevels } from "../meter/levels";
-import { WireCurve, wavyWirePath, wirePath } from "./wireGeometry";
+import { WireCurve, wirePath, wireWave } from "./wireGeometry";
 
 /** Phase speed of the travelling wave (radians per second). */
 const SPEED = 12.6;
@@ -22,6 +22,7 @@ export function useWireOscillation(pathRef: RefObject<SVGPathElement | null>, cu
     const path = pathRef.current;
     if (!path || reducedMotion()) return;
     const c = { x1, y1, x2, y2 };
+    const wave = wireWave(c);
     let lastSound = -Infinity;
     let phase = 0;
     let last = 0;
@@ -36,7 +37,7 @@ export function useWireOscillation(pathRef: RefObject<SVGPathElement | null>, cu
       }
       phase += (SPEED * (last ? Math.min(now - last, 100) : 16)) / 1000;
       last = now;
-      path.setAttribute("d", wavyWirePath(c, 1, phase));
+      path.setAttribute("d", wave(1, phase));
       frame = requestAnimationFrame(tick);
     };
 

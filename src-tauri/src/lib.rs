@@ -35,6 +35,12 @@ fn pw_node_props(handle: State<'_, PwHandle>, node_id: u32) -> Option<BTreeMap<S
   handle.node_props(node_id)
 }
 
+/// Reconnects to PipeWire and rebuilds the graph from scratch.
+#[tauri::command]
+fn pw_resync(handle: State<'_, PwHandle>) -> Result<(), String> {
+  handle.send(Command::Resync)
+}
+
 #[tauri::command]
 fn pw_link(handle: State<'_, PwHandle>, output_port: u32, input_port: u32) -> Result<(), String> {
   handle.send(Command::Link {
@@ -90,6 +96,7 @@ pub fn run() {
       debug_enabled,
       pw_graph,
       pw_node_props,
+      pw_resync,
       pw_link,
       pw_unlink,
       pw_set_volume,

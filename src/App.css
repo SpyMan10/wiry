@@ -541,6 +541,8 @@ button:hover {
 .g-node-bg {
   fill: var(--card);
   stroke: var(--border);
+  /* Lifts the boxes off the wires and the background: spread evenly on every side. */
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 16px rgba(0, 0, 0, 0.6));
 }
 .g-node.selected .g-node-bg {
   stroke: var(--accent);
@@ -1161,4 +1163,28 @@ body.resizing-y * {
 /* Hardware sliders top out at 100 %: no unity mark. */
 .slider.no-unity::-webkit-slider-runnable-track {
   background: linear-gradient(to right, var(--accent) var(--fill), var(--border) var(--fill));
+}
+
+/* ---------- Refresh (PipeWire resync) ---------- */
+
+.refresh-btn {
+  margin-left: auto;
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+.link-btn + .refresh-btn {
+  margin-left: 0;
+}
+.refresh-btn:hover {
+  color: var(--text);
+}
+.refresh-btn.busy .bi {
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

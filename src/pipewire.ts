@@ -72,6 +72,8 @@ export function usePipewireGraph(): GraphSnapshot {
 }
 
 export const pw = {
+  /** Reconnects to PipeWire and rebuilds the whole graph. */
+  resync: () => invoke<void>("pw_resync"),
   nodeProps: (nodeId: number) => invoke<Record<string, string> | null>("pw_node_props", { nodeId }),
   link: (outputPort: number, inputPort: number) => invoke<void>("pw_link", { outputPort, inputPort }),
   unlink: (linkId: number) => invoke<void>("pw_unlink", { linkId }),

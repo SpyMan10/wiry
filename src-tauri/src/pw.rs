@@ -2,7 +2,10 @@
 //! graph (nodes, ports, links, volumes) into a shared snapshot and executes commands
 //! coming from the UI (link / unlink / volume / mute).
 
-use std::cell::RefCell;
+use std::cell::{
+  Cell,
+  RefCell
+};
 use std::collections::{
   BTreeMap,
   HashMap,
@@ -200,6 +203,13 @@ struct Graph {
 }
 
 impl Graph {
+  /// Forgets everything known about the PipeWire graph (the error message is kept).
+  fn reset(&mut self) {
+    let error = self.error.take();
+    *self = Graph::default();
+    self.error = error;
+  }
+
   fn snapshot(&self) -> GraphSnapshot {
     GraphSnapshot {
       connected: self.connected,
@@ -213,11 +223,33 @@ impl Graph {
 
 #[derive(Debug)]
 pub enum Command {
-  Link { output_port: u32, input_port: u32 },
-  Unlink { link_id: u32 },
-  SetVolume { node_id: u32, channels: Vec<f32> },
-  SetMute { node_id: u32, mute: bool }
+  Link {
+    output_port: u32,
+    input_port: u32
+  },
+  Unlink {
+    link_id: u32
+  },
+  SetVolume {
+    node_id: u32,
+    channels: Vec<f32>
+  },
+  SetMute {
+    node_id: u32,
+    mute: bool
+  },
+  /// Drop everything and reconnect to PipeWire, re-reading the whole registry.
+  Resync
 }
+
+/// Why a PipeWire session (one `run_loop`) ended.
+enum Exit {
+  Resync,
+  Disconnected
+}
+
+/// Delay before reconnecting after PipeWire went away (e.g. restarted).
+const RECONNECT_DELAY: Duration = Duration::from_secs(2);
 
 /// Handle stored in Tauri state.
 pub struct PwHandle {
@@ -257,11 +289,25 @@ pub fn start(app: AppHandle) -> PwHandle {
     thread::Builder::new()
       .name("pipewire".into())
       .spawn(move || {
-        if let Err(e) = run_loop(graph.clone(), dirty.clone(), levels, receiver) {
-          let mut g = graph.lock().unwrap();
-          g.connected = false;
-          g.error = Some(format!("PipeWire: {e}"));
+        pw::init();
+        // One PipeWire session per iteration: a resync request or a lost connection starts a
+        // fresh one, so the graph is always rebuilt from the registry.
+        let mut receiver = receiver;
+        loop {
+          let (rx, exit) = run_loop(graph.clone(), dirty.clone(), levels.clone(), receiver);
+          receiver = rx;
+          {
+            let mut g = graph.lock().unwrap();
+            g.reset();
+            if let Err(e) = &exit {
+              g.error = Some(format!("PipeWire: {e}"));
+            }
+          }
+          levels.lock().unwrap().clear();
           dirty.store(true, Ordering::SeqCst);
+          if !matches!(exit, Ok(Exit::Resync)) {
+            thread::sleep(RECONNECT_DELAY);
+          }
         }
       })
       .expect("failed to spawn pipewire thread");
@@ -332,18 +378,27 @@ struct Bound {
   meters: HashMap<u32, Meter>
 }
 
+/// Runs one PipeWire session until a resync is requested or the connection is lost. The
+/// command receiver is handed back so the next session can keep using it.
 fn run_loop(
   graph: Arc<Mutex<Graph>>,
   dirty: Arc<AtomicBool>,
   levels: Levels,
   receiver: pw::channel::Receiver<Command>
-) -> Result<(), pw::Error> {
-  pw::init();
-
-  let main_loop = pw::main_loop::MainLoopRc::new(None)?;
-  let context = pw::context::ContextRc::new(&main_loop, None)?;
-  let core = context.connect_rc(None)?;
-  let registry = core.get_registry_rc()?;
+) -> (pw::channel::Receiver<Command>, Result<Exit, pw::Error>) {
+  macro_rules! attempt {
+    ($e:expr) => {
+      match $e {
+        Ok(v) => v,
+        Err(e) => return (receiver, Err(e))
+      }
+    };
+  }
+  let main_loop = attempt!(pw::main_loop::MainLoopRc::new(None));
+  let context = attempt!(pw::context::ContextRc::new(&main_loop, None));
+  let core = attempt!(context.connect_rc(None));
+  let registry = attempt!(core.get_registry_rc());
+  let resync = Rc::new(Cell::new(false));
 
   {
     let mut g = graph.lock().unwrap();
@@ -494,7 +549,9 @@ fn run_loop(
       .register()
   };
 
-  let _receiver = {
+  let attached = {
+    let resync = resync.clone();
+    let main_loop_weak = main_loop.downgrade();
     let core = core.clone();
     let registry = registry.clone();
     let graph = graph.clone();
@@ -542,15 +599,19 @@ fn run_loop(
         let props = vec![Property::new(SPA_PROP_MUTE, Value::Bool(mute))];
         set_props(&graph, &bound.borrow(), node_id, props);
       }
+      Command::Resync => {
+        resync.set(true);
+        if let Some(ml) = main_loop_weak.upgrade() {
+          ml.quit();
+        }
+      }
     })
   };
 
   main_loop.run();
 
-  let mut g = graph.lock().unwrap();
-  g.connected = false;
-  dirty.store(true, Ordering::SeqCst);
-  Ok(())
+  let exit = if resync.get() { Exit::Resync } else { Exit::Disconnected };
+  (attached.deattach(), Ok(exit))
 }
 
 /// Which nodes get a level meter, and whether it must capture the sink's monitor.

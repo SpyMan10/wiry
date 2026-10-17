@@ -31,7 +31,8 @@
   "graph": {
     "showAll": "show all",
     "empty": "No connections. Select a port in the list to create one.",
-    "wireTitle": "Click to disconnect"
+    "wireTitle": "Click to disconnect",
+    "refresh": "Refresh: reconnect to PipeWire and reload the graph"
   },
   "volume": {
     "mute": "Mute",

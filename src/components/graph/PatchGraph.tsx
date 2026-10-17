@@ -3,6 +3,7 @@ import { t } from "../../i18n";
 import { GraphSnapshot, pw } from "../../pipewire";
 import { useElementSize } from "../../hooks/useElementSize";
 import { useUiState } from "../../state";
+import { RefreshButton } from "../layout/RefreshButton";
 import { Button } from "../ui/Button";
 import { EmptyState } from "../ui/EmptyState";
 import { PanelHeader } from "../ui/PanelHeader";
@@ -42,6 +43,7 @@ export function PatchGraph({ graph }: { graph: GraphSnapshot }) {
             {t("graph.showAll")}
           </Button>
         )}
+        <RefreshButton graph={graph} />
       </PanelHeader>
       <div className="scroll graph-scroll" ref={wrapRef}>
         {layout.links.length === 0 ? (
