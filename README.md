@@ -1,3 +1,5 @@
+![App Preview](./app-preview.png)
+
 # wiry
 
 A desktop patchbay for [PipeWire](https://pipewire.org/) on Linux: see what is plugged into what, rewire it in a few clicks, and adjust every volume from one window.
