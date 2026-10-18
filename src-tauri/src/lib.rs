@@ -1,22 +1,33 @@
-mod alsa_mixer;
-mod pw;
+mod alsa;
+mod graph_store;
+mod logging;
+mod mixer_store;
+mod pipewire;
 
 use std::collections::BTreeMap;
+use std::sync::Arc;
 
-use alsa_mixer::{
-  AlsaCard,
-  AlsaHandle,
-  ControlId,
-  MixerCommand
-};
-use pw::{
-  Command,
+use graph_store::{
   GraphSnapshot,
-  PwHandle
+  GraphStore
 };
+use mixer_store::MixerStore;
 use tauri::{
+  Emitter,
   Manager,
   State
+};
+
+use crate::alsa::{
+  Alsa,
+  Card,
+  Command as MixerCommand,
+  ControlId
+};
+use crate::pipewire::{
+  Command,
+  Listener,
+  PipeWire
 };
 
 /// Debug overlays (FPS counter…) are enabled by running the app with `WIRY_DEBUG=1`.
@@ -26,70 +37,89 @@ fn debug_enabled() -> bool {
 }
 
 #[tauri::command]
-fn pw_graph(handle: State<'_, PwHandle>) -> GraphSnapshot {
-  handle.snapshot()
+fn pw_graph(store: State<'_, Arc<GraphStore>>) -> GraphSnapshot {
+  store.snapshot()
 }
 
 #[tauri::command]
-fn pw_node_props(handle: State<'_, PwHandle>, node_id: u32) -> Option<BTreeMap<String, String>> {
-  handle.node_props(node_id)
+fn pw_node_props(store: State<'_, Arc<GraphStore>>, node_id: u32) -> Option<BTreeMap<String, String>> {
+  store.node_props(node_id)
 }
 
 /// Reconnects to PipeWire and rebuilds the graph from scratch.
 #[tauri::command]
-fn pw_resync(handle: State<'_, PwHandle>) -> Result<(), String> {
-  handle.send(Command::Resync)
+fn pw_resync(pw: State<'_, PipeWire>) -> Result<(), String> {
+  pw.send(Command::Resync)
 }
 
 #[tauri::command]
-fn pw_link(handle: State<'_, PwHandle>, output_port: u32, input_port: u32) -> Result<(), String> {
-  handle.send(Command::Link {
+fn pw_link(pw: State<'_, PipeWire>, output_port: u32, input_port: u32) -> Result<(), String> {
+  pw.send(Command::Link {
     output_port,
     input_port
   })
 }
 
 #[tauri::command]
-fn pw_unlink(handle: State<'_, PwHandle>, link_id: u32) -> Result<(), String> {
-  handle.send(Command::Unlink { link_id })
+fn pw_unlink(pw: State<'_, PipeWire>, link_id: u32) -> Result<(), String> {
+  pw.send(Command::Unlink { link_id })
 }
 
 #[tauri::command]
-fn pw_set_volume(handle: State<'_, PwHandle>, node_id: u32, channels: Vec<f32>) -> Result<(), String> {
-  handle.send(Command::SetVolume { node_id, channels })
+fn pw_set_volume(pw: State<'_, PipeWire>, node_id: u32, channels: Vec<f32>) -> Result<(), String> {
+  pw.send(Command::SetVolume { node_id, channels })
 }
 
 #[tauri::command]
-fn pw_set_mute(handle: State<'_, PwHandle>, node_id: u32, mute: bool) -> Result<(), String> {
-  handle.send(Command::SetMute { node_id, mute })
+fn pw_set_mute(pw: State<'_, PipeWire>, node_id: u32, mute: bool) -> Result<(), String> {
+  pw.send(Command::SetMute { node_id, mute })
 }
 
 #[tauri::command]
-fn alsa_mixers(handle: State<'_, AlsaHandle>) -> Vec<AlsaCard> {
-  handle.snapshot()
+fn alsa_mixers(store: State<'_, Arc<MixerStore>>) -> Vec<Card> {
+  store.snapshot()
 }
 
 #[tauri::command]
-fn alsa_set_volume(handle: State<'_, AlsaHandle>, control: ControlId, value: f32) -> Result<(), String> {
-  handle.send(MixerCommand::Volume { id: control, value })
+fn alsa_set_volume(alsa: State<'_, Alsa>, control: ControlId, value: f32) -> Result<(), String> {
+  alsa.send(MixerCommand::Volume { control, value })
 }
 
 #[tauri::command]
-fn alsa_set_switch(handle: State<'_, AlsaHandle>, control: ControlId, on: bool) -> Result<(), String> {
-  handle.send(MixerCommand::Switch { id: control, on })
+fn alsa_set_switch(alsa: State<'_, Alsa>, control: ControlId, on: bool) -> Result<(), String> {
+  alsa.send(MixerCommand::Switch { control, on })
 }
 
 #[tauri::command]
-fn alsa_set_enum(handle: State<'_, AlsaHandle>, control: ControlId, item: u32) -> Result<(), String> {
-  handle.send(MixerCommand::Enum { id: control, item })
+fn alsa_set_enum(alsa: State<'_, Alsa>, control: ControlId, item: u32) -> Result<(), String> {
+  alsa.send(MixerCommand::Enum { control, item })
 }
 
 pub fn run() {
+  logging::init(debug_enabled());
+  tracing::info!("starting wiry {}", env!("CARGO_PKG_VERSION"));
   tauri::Builder::default()
     .plugin(tauri_plugin_opener::init())
     .setup(|app| {
-      app.manage(pw::start(app.handle().clone()));
-      app.manage(alsa_mixer::start(app.handle().clone()));
+      let pw = PipeWire::new();
+      let store = GraphStore::new();
+      store.subscribe(&pw);
+      let handle = app.handle().clone();
+      pw.listen(Listener::levels(move |levels| {
+        let _ = handle.emit("pw-levels", levels);
+      }));
+      pw.start()?;
+      store.emit_changes(app.handle().clone());
+      app.manage(pw);
+      app.manage(store);
+
+      let alsa = Alsa::new();
+      let mixers = MixerStore::new();
+      mixers.subscribe(&alsa);
+      alsa.start()?;
+      mixers.emit_changes(app.handle().clone());
+      app.manage(alsa);
+      app.manage(mixers);
       Ok(())
     })
     .invoke_handler(tauri::generate_handler![

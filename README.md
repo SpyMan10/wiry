@@ -74,6 +74,19 @@ Start the app with `WIRY_DEBUG=1` to show an FPS counter and keep the webview's 
 WIRY_DEBUG=1 bun run tauri dev
 ```
 
+### Logs
+
+The backend logs what it does to stderr: connection to PipeWire, nodes, ports and links appearing, volume changes, commands sent and executed, sound cards and mixer changes, errors. The default level is `info`, or `debug` with `WIRY_DEBUG=1`.
+
+Set `WIRY_LOG` to change it. It uses the [`RUST_LOG` syntax](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html):
+
+```sh
+WIRY_LOG=wiry_lib=debug bun run tauri dev                 # everything wiry does
+WIRY_LOG=wiry_lib=trace bun run tauri dev                 # also every update pushed to the UI
+WIRY_LOG=wiry_lib::pipewire=trace bun run tauri dev       # PipeWire only, in detail
+WIRY_LOG=wiry_lib::alsa=debug,warn bun run tauri dev      # ALSA mixer only, other modules' warnings
+```
+
 ### Contributing
 
 - Rust code is formatted with the **nightly** rustfmt. `src-tauri/rustfmt.toml` uses nightly-only options, so stable `cargo fmt` would undo them:
