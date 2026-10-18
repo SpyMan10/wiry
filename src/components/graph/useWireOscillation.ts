@@ -23,6 +23,9 @@ export function useWireOscillation(pathRef: RefObject<SVGPathElement | null>, cu
     if (!path || reducedMotion()) return;
     const c = { x1, y1, x2, y2 };
     const wave = wireWave(c);
+    // Start from the current geometry: the wire may have moved (resized window…) while a
+    // previous run of this effect was animating it.
+    path.setAttribute("d", wirePath(c));
     let lastSound = -Infinity;
     let phase = 0;
     let last = 0;
@@ -48,10 +51,11 @@ export function useWireOscillation(pathRef: RefObject<SVGPathElement | null>, cu
       if (frame === null) frame = requestAnimationFrame(tick);
     });
 
+    // No reset to the plain curve here: on a geometry change it would write the *old* curve
+    // over the new one React just rendered. The next run (or React) draws the right one.
     return () => {
       unsubscribe();
       if (frame !== null) cancelAnimationFrame(frame);
-      path.setAttribute("d", wirePath(c));
     };
   }, [pathRef, x1, y1, x2, y2, levelNode]);
 }

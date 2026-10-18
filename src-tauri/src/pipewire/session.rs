@@ -33,6 +33,7 @@ use pw::main_loop::{
 };
 use pw::node::{
   Node as NodeProxy,
+  NodeChangeMask,
   NodeListener
 };
 use pw::properties::properties;
@@ -326,6 +327,11 @@ impl Ctx {
     proxy
       .add_listener_local()
       .info(move |info| {
+        // Info events also come for state changes (running, idle…) with empty properties:
+        // only read them when they were actually sent.
+        if !info.change_mask().contains(NodeChangeMask::PROPS) {
+          return;
+        }
         let (Some(props), Some(state)) = (info.props(), state_info.upgrade()) else {
           return
         };
