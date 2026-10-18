@@ -37,7 +37,6 @@
   "volume": {
     "mute": "Mute",
     "unmute": "Unmute",
-    "channels": "Channels",
     "channelFallback": "CH{n}",
     "edit": "Click to type a value"
   },
@@ -69,6 +68,7 @@
   },
   "bottom": {
     "properties": "Properties",
+    "volumes": "Volumes",
     "alsa": "ALSA",
     "collapse": "Collapse panel",
     "expand": "Expand panel"
@@ -83,5 +83,9 @@
     "switchOff": "Off",
     "mute": "Mute",
     "unmute": "Unmute"
+  },
+  "volumes": {
+    "filter": "Filter nodes…",
+    "empty": "No node with a volume."
   }
 }

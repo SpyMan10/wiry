@@ -18,7 +18,7 @@ export function NodeActions({
   const isTarget = patch.armedNode !== null && patch.armedNode !== nodeId && ins.length > 0;
 
   return (
-    <div className="node-actions" onClick={(e) => e.stopPropagation()}>
+    <div className="node-actions">
       {isTarget ? (
         <Button
           accent

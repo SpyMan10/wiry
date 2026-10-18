@@ -10,24 +10,35 @@ export function Percent({
   value,
   small,
   max = 1.5,
+  unit = true,
   onCommit,
 }: {
   value: number;
   small?: boolean;
   /** Upper bound of the typed value (UI scale). */
   max?: number;
+  /** Show the "%" sign after the number. */
+  unit?: boolean;
   onCommit?: (value: number) => void;
 }) {
   const [text, setText] = useState<string | null>(null);
   const shown = Math.round(value * 100);
   const className = cx("vol-pct", small && "small");
+  const sign = unit ? "%" : "";
 
-  if (!onCommit) return <span className={className}>{shown}%</span>;
+  if (!onCommit)
+    return (
+      <span className={className}>
+        {shown}
+        {sign}
+      </span>
+    );
 
   if (text === null) {
     return (
       <button type="button" className={cx(className, "editable")} title={t("volume.edit")} onClick={() => setText(String(shown))}>
-        {shown}%
+        {shown}
+        {sign}
       </button>
     );
   }
@@ -57,7 +68,7 @@ export function Percent({
           }
         }}
       />
-      %
+      {sign}
     </span>
   );
 }

@@ -24,6 +24,8 @@
   --cat-other: #9aa1ad;
   --header-bg: #16191e;
   --btn-icon-size: 26px;
+  /* Category title bars: height in the node list, width (vertical title) in the mixer. */
+  --group-header-size: 1.8rem;
   --header-h: 3.5rem; /* follows the text size, like the folded rail width */
 
   font-family: Inter, system-ui, "Segoe UI", sans-serif;
@@ -57,6 +59,11 @@ body,
   margin: 0;
   height: 100%;
   overflow: hidden;
+}
+/* Tiling window managers (Hyprland…) ignore the window's minimum size: below the app's own
+   minimum, the whole UI scrolls instead of every panel getting squashed. */
+#root {
+  overflow: auto;
 }
 
 button {
@@ -92,6 +99,9 @@ button:hover {
   display: flex;
   flex-direction: column;
   height: 100%;
+  /* Same as the window's minimum size in tauri.conf.json. */
+  min-width: 960px;
+  min-height: 500px;
 }
 
 .banner {
@@ -103,7 +113,8 @@ button:hover {
 
 .columns {
   flex: 1;
-  min-height: 0;
+  /* The workspace keeps this much height: the bottom panel shrinks first (its tabs scroll). */
+  min-height: 14rem;
   display: grid;
   --left-col: 360px; /* overridden inline by the splitter */
   grid-template-columns: var(--left-col) 1fr;
@@ -168,10 +179,11 @@ button:hover {
 }
 .group-toggle {
   width: 100%;
+  height: var(--group-header-size);
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px;
+  padding: 0 4px;
   border: none;
   border-radius: 5px;
   background: transparent;
@@ -391,7 +403,21 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 6px;
-  cursor: pointer;
+}
+/* Name + type icons: the part to click to select the node (like the mixer strip names). */
+.node-title-btn {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+}
+.node-title-btn:hover {
+  color: var(--accent);
 }
 .node-title {
   flex: 0 1 auto;
@@ -530,7 +556,7 @@ button:hover {
 
 .graph-scroll {
   padding: 0;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 .graph-svg {
   display: block;
@@ -652,34 +678,7 @@ button:hover {
   border-radius: 4px;
   outline: none;
 }
-.vol {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
-.vol.muted .slider {
-  opacity: 0.4;
-}
-.vol-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-}
-.vol-row:first-child {
-  margin-top: 0;
-}
-/* Channel name sits in the mute button's slot so sliders line up. */
-.ch-name {
-  flex: none;
-  width: var(--btn-icon-size);
-  text-align: center;
-  font-size: 11px;
-  color: var(--muted);
-}
-/* .expand is also an empty <span> keeping the column aligned on single-channel nodes. */
-.mute,
-.expand {
+.mute {
   flex: none;
   width: var(--btn-icon-size);
   background: transparent;
@@ -689,6 +688,9 @@ button:hover {
 }
 
 .slider {
+  /* Direction of the fill along the track; flipped for vertical sliders. */
+  --slider-dir: to right;
+  --slider-fill: var(--accent);
   flex: 1;
   min-width: 0;
   appearance: none;
@@ -700,32 +702,65 @@ button:hover {
   height: 4px;
   border-radius: 2px;
   background: linear-gradient(
-      to right,
+      var(--slider-dir),
       transparent calc(var(--unity) - 1px),
       var(--muted) calc(var(--unity) - 1px),
       var(--muted) calc(var(--unity) + 1px),
       transparent calc(var(--unity) + 1px)
     ),
-    linear-gradient(to right, var(--accent) var(--fill), var(--border) var(--fill));
+    linear-gradient(var(--slider-dir), var(--slider-fill) var(--fill), var(--border) var(--fill));
 }
 .slider.over::-webkit-slider-runnable-track {
   background: linear-gradient(
-      to right,
+      var(--slider-dir),
       transparent calc(var(--unity) - 1px),
       var(--muted) calc(var(--unity) - 1px),
       var(--muted) calc(var(--unity) + 1px),
       transparent calc(var(--unity) + 1px)
     ),
-    linear-gradient(to right, var(--accent) var(--unity), #ffb35c var(--unity), #ffb35c var(--fill), var(--border) var(--fill));
+    linear-gradient(
+      var(--slider-dir),
+      var(--slider-fill) var(--unity),
+      #ffb35c var(--unity),
+      #ffb35c var(--fill),
+      var(--border) var(--fill)
+    );
 }
+/* Rectangular fader cap, same proportions in both orientations: 24px along the track,
+   16px across it. */
 .slider::-webkit-slider-thumb {
   appearance: none;
-  width: 12px;
-  height: 12px;
-  margin-top: -4px;
-  border-radius: 50%;
+  width: 24px;
+  height: 16px;
+  margin-top: -6px; /* centred on the 4px track */
+  border-radius: 2px;
   background: var(--text);
   border: none;
+  /* Drop shadow under the cap: a tight contact shadow plus a softer one further down. */
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.55);
+}
+/* Vertical slider: bottom = 0, top = max. Its length comes from --slider-length (or the
+   parent's height through `height: 100%`). */
+.slider.vertical {
+  --slider-dir: to top;
+  flex: none;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 18px;
+  height: var(--slider-length, 8rem);
+  min-width: 0;
+}
+.slider.vertical::-webkit-slider-runnable-track {
+  width: 4px;
+  height: 100%;
+}
+.slider.vertical::-webkit-slider-thumb {
+  width: 16px;
+  height: 24px;
+  margin-top: 0;
+  margin-left: -6px;
 }
 
 .sonograph {
@@ -747,8 +782,7 @@ button:hover {
   color: var(--accent);
   margin-right: 2px;
 }
-.mute .bi,
-.expand .bi {
+.mute .bi {
   font-size: 13px;
 }
 .mute.on {
@@ -867,7 +901,8 @@ button:hover {
 
 .bottom-panel {
   position: relative;
-  flex: none;
+  flex: 0 1 auto;
+  min-height: var(--header-h);
   height: 16rem;
   border-top: 1px solid var(--border);
 }
@@ -1101,7 +1136,8 @@ body.resizing-y * {
   gap: 8px 24px;
   align-items: start;
 }
-.alsa-section h3 {
+.alsa-section h3,
+.volume-group h3 {
   margin: 4px 0 6px;
   font-size: 11px;
   font-weight: 600;
@@ -1162,7 +1198,7 @@ body.resizing-y * {
 }
 /* Hardware sliders top out at 100 %: no unity mark. */
 .slider.no-unity::-webkit-slider-runnable-track {
-  background: linear-gradient(to right, var(--accent) var(--fill), var(--border) var(--fill));
+  background: linear-gradient(var(--slider-dir), var(--slider-fill) var(--fill), var(--border) var(--fill));
 }
 
 /* ---------- Refresh (PipeWire resync) ---------- */
@@ -1187,4 +1223,208 @@ body.resizing-y * {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ---------- Volumes tab (mixer strips) ---------- */
+
+/* Strips flow horizontally and fill the panel's height; scroll sideways when they don't fit. */
+.volumes-scroll {
+  display: flex;
+  padding: 8px 12px 12px;
+  overflow: auto;
+}
+/* Same spacing everywhere: between strips, title and strips, and from one category to the next. */
+.volume-groups {
+  /* Keep its natural size so the panel scrolls instead of squeezing the strips. */
+  flex: none;
+  display: flex;
+  gap: 6px;
+  min-height: 12rem;
+}
+/* Category title written vertically on the left of its strips. */
+.volume-group {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  min-height: 0;
+}
+/* Starts at the top: icon, then the text reading top to bottom. */
+.volume-group h3 {
+  margin: 0;
+  writing-mode: vertical-rl;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+/* The icons stay upright. */
+.volume-group h3 .bi {
+  writing-mode: horizontal-tb;
+}
+/* The whole title column is the fold button. */
+.volume-group-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: var(--group-header-size);
+  height: 100%;
+  padding: 6px 0;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+}
+.volume-group-toggle:hover {
+  background: var(--card);
+  color: var(--text);
+}
+/* Open: the chevron points right, towards the strips; folded: it points down. */
+.volume-group-toggle .chevron {
+  font-size: 10px;
+  transform: rotate(-90deg);
+  transition: transform 0.15s;
+}
+.volume-group.collapsed .volume-group-toggle .chevron {
+  transform: none;
+}
+.volume-group-toggle .group-count {
+  writing-mode: horizontal-tb;
+}
+.volume-group .cat-icon {
+  color: var(--cat);
+}
+.volume-group-strips {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 6px;
+}
+/* name (vertical) · icons, faders and buttons */
+.volume-strip {
+  flex: none;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  min-height: 0;
+  padding: 6px 6px 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--card);
+}
+/* Category stripe along the left edge, as on the node cards. */
+.volume-strip::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--cat);
+}
+.volume-strip.selected {
+  border-color: var(--accent);
+}
+.volume-strip.muted .slider {
+  opacity: 0.4;
+}
+/* Type icons then node name, written vertically from the top of the strip. */
+.strip-name {
+  flex: none;
+  min-height: 0;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  writing-mode: vertical-rl;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: start;
+}
+/* The icons stay upright. */
+.strip-name .bi {
+  writing-mode: horizontal-tb;
+}
+.strip-name:hover {
+  color: var(--accent);
+}
+.strip-name-text {
+  display: block;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.strip-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 0;
+}
+.strip-faders {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 10px;
+}
+.fader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 0;
+}
+/* Fixed width for the value (up to "150", and while typing) so the fader never changes width
+   with the number shown. */
+.fader .vol-pct {
+  box-sizing: border-box;
+  width: calc(4ch + 6px);
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+/* The fader takes whatever height the strip has left. */
+.fader .slider.vertical {
+  flex: 1;
+  height: auto;
+  min-height: 3rem;
+}
+/* Same height for every footer (mute button or channel name): sliders end at the same level. */
+.fader-footer {
+  height: var(--btn-icon-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fader-label {
+  font-size: 10px;
+  color: var(--muted);
+}
+/* The master fader stands out: its own darker block with value, slider and mute. */
+.fader.master {
+  padding: 6px 6px 4px;
+  border-radius: 7px;
+  background: var(--panel); /* #1a1d23 */
+}
+.fader.master .vol-pct {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Per-channel (L/R…) faders: a duller blue than the main fader; aligned with its inner padding. */
+.fader.channel {
+  padding: 7px 0 5px;
+}
+.fader.channel .slider {
+  --slider-fill: #4a6488;
 }

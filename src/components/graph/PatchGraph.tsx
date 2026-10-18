@@ -11,6 +11,9 @@ import { GraphNode } from "./GraphNode";
 import { Box, MARGIN, computeLayout, portY } from "./layout";
 import { Wire } from "./Wire";
 
+/** Minimum horizontal room (px) for the wires between the two columns. */
+const MIN_WIRE_SPAN = 120;
+
 /** Centre panel: the wired part of the graph, sources on the left and destinations on the right. */
 export function PatchGraph({ graph }: { graph: GraphSnapshot }) {
   const { selectedNode, setSelectedNode } = useUiState();
@@ -23,8 +26,10 @@ export function PatchGraph({ graph }: { graph: GraphSnapshot }) {
   const isActive = (outNode: number, inNode: number) => focus === null || focus === outNode || focus === inNode;
 
   const nodeW = Math.max(140, Math.min(240, width * 0.34));
+  // Below this the two columns would overlap: lay out at this width and scroll horizontally.
+  const graphW = Math.max(width, 2 * (nodeW + MARGIN) + MIN_WIRE_SPAN);
   const leftX = MARGIN;
-  const rightX = width - MARGIN - nodeW;
+  const rightX = graphW - MARGIN - nodeW;
 
 
 
@@ -49,7 +54,7 @@ export function PatchGraph({ graph }: { graph: GraphSnapshot }) {
         {layout.links.length === 0 ? (
           <EmptyState>{t("graph.empty")}</EmptyState>
         ) : (
-          <svg width={width} height={layout.height} className="graph-svg">
+          <svg width={graphW} height={layout.height} className="graph-svg">
             <g className="wires">
               {layout.links.map((l) => {
                 const a = layout.leftByNode.get(l.outputNode);

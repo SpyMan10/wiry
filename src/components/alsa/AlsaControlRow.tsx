@@ -43,7 +43,7 @@ function VolumeValue({ card, control }: { card: number; control: AlsaControl }) 
         <span />
       )}
       <div className={cx("alsa-slider", control.switch === false && "muted")}>
-        {/* No double-click reset: never jump a hardware gain to 100 % by accident. */}
+        {/* No middle-click reset: never jump a hardware gain to 100 % by accident. */}
         <VolumeSlider value={draft.value} onChange={draft.set} onEnd={draft.end} max={1} resetValue={null} />
       </div>
       <Percent

@@ -4,15 +4,17 @@ import { GraphSnapshot } from "../../pipewire";
 import { usePersistentState } from "../../hooks/usePersistentState";
 import { AlsaMixerTab } from "../alsa/AlsaMixerTab";
 import { PropertiesTab } from "../properties/PropertiesTab";
+import { VolumesTab } from "../volume/VolumesTab";
 import { Button } from "../ui/Button";
 import { Splitter } from "../ui/Splitter";
 import { TabDef, Tabs } from "../ui/Tabs";
 import { cx } from "../ui/cx";
 
-type TabId = "properties" | "alsa";
+type TabId = "properties" | "volumes" | "alsa";
 
 const TABS: TabDef<TabId>[] = [
   { id: "properties", label: t("bottom.properties"), icon: "card-list" },
+  { id: "volumes", label: t("bottom.volumes"), icon: "volume-up" },
   { id: "alsa", label: t("bottom.alsa"), icon: "sliders" },
 ];
 
@@ -61,6 +63,8 @@ export function BottomPanel({ graph }: { graph: GraphSnapshot }) {
       {!folded &&
         (tab === "properties" ? (
           <PropertiesTab graph={graph} toolsSlot={toolsSlot} />
+        ) : tab === "volumes" ? (
+          <VolumesTab graph={graph} toolsSlot={toolsSlot} />
         ) : (
           <AlsaMixerTab graph={graph} toolsSlot={toolsSlot} />
         ))}

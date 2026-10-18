@@ -2,7 +2,6 @@ import { PwNode, PwPort, hasMeter, nodeCategory } from "../../pipewire";
 import { useUiState } from "../../state";
 import { Sonograph } from "../meter/Sonograph";
 import { cx } from "../ui/cx";
-import { VolumeControl } from "../volume/VolumeControl";
 import { NodeHeader } from "./NodeHeader";
 import { PortList } from "./PortList";
 import { Patching } from "./usePatching";
@@ -40,7 +39,6 @@ export function NodeCard({ node, ports, patch }: { node: PwNode; ports: PwPort[]
         )}
         <PortList ins={ins} outs={outs} patch={patch} />
       </div>
-      {node.volume && <VolumeControl node={node} />}
     </div>
   );
 }
