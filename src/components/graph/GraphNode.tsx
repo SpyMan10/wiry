@@ -7,6 +7,8 @@ import { SvgIcon } from "./SvgIcon"
 
 const ICON_STEP = 16
 const CHAR_W = 7
+/** Approximate width of one character of the (smaller) id text. */
+const ID_CHAR_W = 6.5
 
 function truncate(s: string, n: number) {
   return s.length > n ? s.slice(0, Math.max(1, n - 1)) + "…" : s
@@ -29,6 +31,10 @@ export function GraphNode({
   const { selectedNode, setSelectedNode } = useUiState()
   const { node, icons } = box
   const selected = selectedNode === node.id
+  // The id sits right before the type icons; the title is truncated to fit before it.
+  const idText = `#${node.id}`
+  const idWidth = idText.length * ID_CHAR_W
+  const idX = width - NODE_PAD - icons.length * ICON_STEP - 4
 
   return (
     <g
@@ -47,10 +53,10 @@ export function GraphNode({
       />
       <text className="g-node-title" x={NODE_INSET} y={NODE_TITLE_Y}>
         <title>{node.description}</title>
-        {truncate(
-          node.description,
-          Math.floor((width - NODE_INSET - NODE_PAD - icons.length * ICON_STEP) / CHAR_W)
-        )}
+        {truncate(node.description, Math.floor((idX - idWidth - 6 - NODE_INSET) / CHAR_W))}
+      </text>
+      <text className="g-node-id" x={idX} y={NODE_TITLE_Y} textAnchor="end">
+        {idText}
       </text>
       {icons.map(({ icon, title }, i) => (
         <SvgIcon
@@ -59,7 +65,7 @@ export function GraphNode({
           name={icon}
           title={title}
           x={width - NODE_PAD - (icons.length - 1 - i) * ICON_STEP}
-          y={NODE_TITLE_Y + 1}
+          y={NODE_TITLE_Y}
         />
       ))}
       {box.ports.map((p, i) => (

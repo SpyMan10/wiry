@@ -19,8 +19,8 @@ export const NODE_PAD = 12
 export const NODE_PAD_Y = 8
 /** Left inset of the content, clearing the category stripe. */
 export const NODE_INSET = NODE_PAD + 8
-/** Baseline of the title row. */
-export const NODE_TITLE_Y = NODE_PAD_Y + 12
+/** Vertical centre of the title row (16px high): title, id and icons are centred on it. */
+export const NODE_TITLE_Y = NODE_PAD_Y + 8
 /** Top of the first port row: padding + title + gap. */
 export const NODE_HEADER_H = NODE_PAD_Y + 16 + 4
 export const PORT_ROW_H = 20

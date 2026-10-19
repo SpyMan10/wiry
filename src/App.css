@@ -433,6 +433,7 @@ button:hover {
 .node-actions button {
   font-size: 11px;
   padding: 1px 6px;
+  white-space: nowrap;
 }
 .node-icons {
   flex: none;
@@ -441,7 +442,10 @@ button:hover {
   color: var(--muted);
   font-size: 12px;
 }
+/* The action keeps its full size: the title is what shrinks (with an ellipsis). */
 .node-actions {
+  flex: none;
+  display: flex;
   margin-left: auto;
 }
 .node-head {
@@ -1439,4 +1443,26 @@ body.resizing-y * {
 }
 .fader.channel .slider {
   --slider-fill: #4a6488;
+}
+
+/* ---------- Node ids ---------- */
+
+.node-id {
+  flex: none;
+  font-size: 11px;
+  font-weight: normal;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.g-node-id {
+  fill: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Graph node title row: title, id and type icons share one vertical centre. */
+.g-node-title,
+.g-node-id,
+.g-node-icon {
+  dominant-baseline: central;
 }
