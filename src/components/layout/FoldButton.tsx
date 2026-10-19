@@ -1,5 +1,5 @@
-import { t } from "../../i18n";
-import { Button } from "../ui/Button";
+import { t } from "../../i18n"
+import { Button } from "../ui/Button"
 
 /** Panel-header button that folds a side panel. */
 export function FoldButton({ side, onFold }: { side: "left" | "right"; onFold: () => void }) {
@@ -10,5 +10,5 @@ export function FoldButton({ side, onFold }: { side: "left" | "right"; onFold: (
       title={t("fold.collapse")}
       onClick={onFold}
     />
-  );
+  )
 }

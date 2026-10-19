@@ -1,16 +1,16 @@
-import { AlsaCard } from "../../alsa";
-import { t } from "../../i18n";
-import { Icon } from "../ui/Icon";
-import { Select } from "../ui/Select";
+import { AlsaCard } from "../../alsa"
+import { t } from "../../i18n"
+import { Icon } from "../ui/Icon"
+import { Select } from "../ui/Select"
 
 export function AlsaCardPicker({
   cards,
   value,
-  onChange,
+  onChange
 }: {
-  cards: AlsaCard[];
-  value: number;
-  onChange: (index: number) => void;
+  cards: AlsaCard[]
+  value: number
+  onChange: (index: number) => void
 }) {
   return (
     <label className="alsa-card-picker" title={t("alsa.card")}>
@@ -18,8 +18,8 @@ export function AlsaCardPicker({
       <Select
         value={value}
         onChange={onChange}
-        options={cards.map((c) => ({ value: c.index, label: `${c.name} (hw:${c.index})` }))}
+        options={cards.map(c => ({ value: c.index, label: `${c.name} (hw:${c.index})` }))}
       />
     </label>
-  );
+  )
 }

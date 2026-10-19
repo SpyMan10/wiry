@@ -1,5 +1,5 @@
-import { NodeIcon } from "../../pipewire";
-import { Icon } from "../ui/Icon";
+import { NodeIcon } from "../../pipewire"
+import { Icon } from "../ui/Icon"
 
 export function NodeIcons({ icons }: { icons: NodeIcon[] }) {
   return (
@@ -8,5 +8,5 @@ export function NodeIcons({ icons }: { icons: NodeIcon[] }) {
         <Icon key={icon} name={icon} title={title} />
       ))}
     </span>
-  );
+  )
 }

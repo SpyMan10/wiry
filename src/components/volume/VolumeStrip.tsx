@@ -1,10 +1,10 @@
-import { t } from "../../i18n";
-import { PwNode, PwPort, nodeCategory, nodeIcons } from "../../pipewire";
-import { NodeIcons } from "../nodes/NodeIcons";
-import { cx } from "../ui/cx";
-import { Fader } from "./Fader";
-import { MuteButton } from "./MuteButton";
-import { useNodeVolume } from "./useNodeVolume";
+import { t } from "../../i18n"
+import { PwNode, PwPort, nodeCategory, nodeIcons } from "../../pipewire"
+import { NodeIcons } from "../nodes/NodeIcons"
+import { cx } from "../ui/cx"
+import { Fader } from "./Fader"
+import { MuteButton } from "./MuteButton"
+import { useNodeVolume } from "./useNodeVolume"
 
 /**
  * A mixer strip for one node: type icons and name written vertically along the strip (click
@@ -15,21 +15,31 @@ export function VolumeStrip({
   node,
   ports,
   selected,
-  onSelect,
+  onSelect
 }: {
-  node: PwNode;
-  ports: PwPort[];
-  selected: boolean;
-  onSelect: () => void;
+  node: PwNode
+  ports: PwPort[]
+  selected: boolean
+  onSelect: () => void
 }) {
-  const v = useNodeVolume(node);
+  const v = useNodeVolume(node)
 
   return (
     <div
       data-node-id={node.id}
-      className={cx("volume-strip", `cat-${nodeCategory(node)}`, selected && "selected", v.mute && "muted")}
+      className={cx(
+        "volume-strip",
+        `cat-${nodeCategory(node)}`,
+        selected && "selected",
+        v.mute && "muted"
+      )}
     >
-      <button type="button" className="strip-name" title={`${node.description} · ${node.name} · #${node.id}`} onClick={onSelect}>
+      <button
+        type="button"
+        className="strip-name"
+        title={`${node.description} · ${node.name} · #${node.id}`}
+        onClick={onSelect}
+      >
         <NodeIcons icons={nodeIcons(node, ports)} />
         <span className="strip-name-text">{node.description}</span>
       </button>
@@ -47,13 +57,17 @@ export function VolumeStrip({
                 key={i}
                 variant="channel"
                 value={c}
-                onChange={(value) => v.setChannel(i, value)}
+                onChange={value => v.setChannel(i, value)}
                 onEnd={v.end}
-                footer={<span className="fader-label">{v.channelMap[i] ?? t("volume.channelFallback", { n: i + 1 })}</span>}
+                footer={
+                  <span className="fader-label">
+                    {v.channelMap[i] ?? t("volume.channelFallback", { n: i + 1 })}
+                  </span>
+                }
               />
             ))}
         </div>
       </div>
     </div>
-  );
+  )
 }

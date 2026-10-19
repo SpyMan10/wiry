@@ -1,21 +1,21 @@
-import { t } from "../../i18n";
-import { PwPort } from "../../pipewire";
-import { Button } from "../ui/Button";
-import { Patching } from "./usePatching";
+import { t } from "../../i18n"
+import { PwPort } from "../../pipewire"
+import { Button } from "../ui/Button"
+import { Patching } from "./usePatching"
 
 /** "Link" (arm this node's outputs) or, while another node is armed, "Connect here". */
 export function NodeActions({
   nodeId,
   ins,
   outs,
-  patch,
+  patch
 }: {
-  nodeId: number;
-  ins: PwPort[];
-  outs: PwPort[];
-  patch: Patching;
+  nodeId: number
+  ins: PwPort[]
+  outs: PwPort[]
+  patch: Patching
 }) {
-  const isTarget = patch.armedNode !== null && patch.armedNode !== nodeId && ins.length > 0;
+  const isTarget = patch.armedNode !== null && patch.armedNode !== nodeId && ins.length > 0
 
   return (
     <div className="node-actions">
@@ -24,8 +24,8 @@ export function NodeActions({
           accent
           icon="plug-fill"
           onClick={() => {
-            patch.connectArmedNodeTo(ins);
-            patch.cancel();
+            patch.connectArmedNodeTo(ins)
+            patch.cancel()
           }}
         >
           {t("nodeList.connectHere")}
@@ -43,5 +43,5 @@ export function NodeActions({
         )
       )}
     </div>
-  );
+  )
 }

@@ -1,20 +1,20 @@
-import { CSSProperties } from "react";
-import { cx } from "../ui/cx";
+import { CSSProperties } from "react"
+import { cx } from "../ui/cx"
 
 /** Upper bound of the PipeWire volume sliders (UI scale, 1 = 100 %). */
-export const MAX_VOLUME = 1.5;
+export const MAX_VOLUME = 1.5
 
 interface Props {
-  value: number;
-  onChange: (v: number) => void;
-  onEnd: () => void;
+  value: number
+  onChange: (v: number) => void
+  onEnd: () => void
   /** Upper bound (default 150 %). Without headroom above 100 % no unity mark is drawn. */
-  max?: number;
+  max?: number
   /** Value set on middle-click; `null` disables it. */
-  resetValue?: number | null;
-  title?: string;
+  resetValue?: number | null
+  title?: string
   /** "vertical": 0 at the bottom, max at the top (length set in CSS, `--slider-length`). */
-  orientation?: "horizontal" | "vertical";
+  orientation?: "horizontal" | "vertical"
 }
 
 /**
@@ -28,9 +28,9 @@ export function VolumeSlider({
   max = MAX_VOLUME,
   resetValue = 1,
   title,
-  orientation = "horizontal",
+  orientation = "horizontal"
 }: Props) {
-  const fill = Math.min(value / max, 1) * 100;
+  const fill = Math.min(value / max, 1) * 100
   return (
     <input
       type="range"
@@ -42,18 +42,18 @@ export function VolumeSlider({
       title={title}
       aria-orientation={orientation}
       style={{ "--fill": `${fill}%`, "--unity": `${100 / max}%` } as CSSProperties}
-      onChange={(e) => onChange(parseFloat(e.currentTarget.value))}
+      onChange={e => onChange(parseFloat(e.currentTarget.value))}
       onPointerUp={onEnd}
       onKeyUp={onEnd}
       onBlur={onEnd}
-      onMouseDown={(e) => {
-        if (e.button !== 1 || resetValue === null) return;
+      onMouseDown={e => {
+        if (e.button !== 1 || resetValue === null) return
         // Middle button: reset, and keep Linux from starting an autoscroll or a primary paste.
-        e.preventDefault();
-        onChange(resetValue);
-        onEnd();
+        e.preventDefault()
+        onChange(resetValue)
+        onEnd()
       }}
-      onAuxClick={(e) => e.button === 1 && e.preventDefault()}
+      onAuxClick={e => e.button === 1 && e.preventDefault()}
     />
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import { Button } from "./Button";
-import { cx } from "./cx";
+import { ReactNode } from "react"
+import { Button } from "./Button"
+import { cx } from "./cx"
 
 /** Toolbar on/off button. */
 export function ToggleButton({
@@ -8,13 +8,13 @@ export function ToggleButton({
   onToggle,
   icon,
   title,
-  children,
+  children
 }: {
-  pressed: boolean;
-  onToggle: (pressed: boolean) => void;
-  icon: string;
-  title?: string;
-  children: ReactNode;
+  pressed: boolean
+  onToggle: (pressed: boolean) => void
+  icon: string
+  title?: string
+  children: ReactNode
 }) {
   return (
     <Button
@@ -26,5 +26,5 @@ export function ToggleButton({
     >
       {children}
     </Button>
-  );
+  )
 }

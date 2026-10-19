@@ -1,7 +1,7 @@
-import { PwPort } from "../../pipewire";
-import { cx } from "../ui/cx";
-import { PortButton } from "./PortButton";
-import { Patching } from "./usePatching";
+import { PwPort } from "../../pipewire"
+import { cx } from "../ui/cx"
+import { PortButton } from "./PortButton"
+import { Patching } from "./usePatching"
 
 /** Inputs column then outputs column; a single column when the node only has one direction. */
 export function PortList({ ins, outs, patch }: { ins: PwPort[]; outs: PwPort[]; patch: Patching }) {
@@ -11,12 +11,12 @@ export function PortList({ ins, outs, patch }: { ins: PwPort[]; outs: PwPort[]; 
         (list, i) =>
           list.length > 0 && (
             <div key={i} className={cx("port-col", i ? "outs" : "ins")}>
-              {list.map((p) => (
+              {list.map(p => (
                 <PortButton key={p.id} port={p} patch={patch} />
               ))}
             </div>
-          ),
+          )
       )}
     </div>
-  );
+  )
 }

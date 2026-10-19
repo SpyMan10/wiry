@@ -1,8 +1,8 @@
-import { ReactNode } from "react";
-import { t } from "../../i18n";
-import { CATEGORY_ICONS, NodeCategory, categoryLabel } from "../../pipewire";
-import { Icon } from "../ui/Icon";
-import { cx } from "../ui/cx";
+import { ReactNode } from "react"
+import { t } from "../../i18n"
+import { CATEGORY_ICONS, NodeCategory, categoryLabel } from "../../pipewire"
+import { Icon } from "../ui/Icon"
+import { cx } from "../ui/cx"
 
 /**
  * A category of the mixer: vertical title (click folds/unfolds it) followed by its strips.
@@ -13,13 +13,13 @@ export function VolumeGroup({
   count,
   open,
   onToggle,
-  children,
+  children
 }: {
-  category: NodeCategory;
-  count: number;
-  open: boolean;
-  onToggle: () => void;
-  children: ReactNode;
+  category: NodeCategory
+  count: number
+  open: boolean
+  onToggle: () => void
+  children: ReactNode
 }) {
   return (
     <section className={cx("volume-group", `cat-${category}`, !open && "collapsed")}>
@@ -39,5 +39,5 @@ export function VolumeGroup({
       </h3>
       {open && <div className="volume-group-strips">{children}</div>}
     </section>
-  );
+  )
 }

@@ -1,18 +1,18 @@
-import { t } from "../../i18n";
-import { SearchField } from "../ui/SearchField";
-import { ToggleButton } from "../ui/ToggleButton";
+import { t } from "../../i18n"
+import { SearchField } from "../ui/SearchField"
+import { ToggleButton } from "../ui/ToggleButton"
 
 /** Search + "monitors" toggle strip under the node list header. */
 export function NodeToolbar({
   query,
   onQueryChange,
   showMonitors,
-  onShowMonitorsChange,
+  onShowMonitorsChange
 }: {
-  query: string;
-  onQueryChange: (q: string) => void;
-  showMonitors: boolean;
-  onShowMonitorsChange: (v: boolean) => void;
+  query: string
+  onQueryChange: (q: string) => void
+  showMonitors: boolean
+  onShowMonitorsChange: (v: boolean) => void
 }) {
   return (
     <div className="toolbar">
@@ -26,5 +26,5 @@ export function NodeToolbar({
         {t("nodeList.monitors")}
       </ToggleButton>
     </div>
-  );
+  )
 }

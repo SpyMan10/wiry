@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { t } from "../../i18n";
-import { cx } from "../ui/cx";
+import { useState } from "react"
+import { t } from "../../i18n"
+import { cx } from "../ui/cx"
 
 /**
  * A UI-scale volume (1 = 100 %) as a rounded percentage. With `onCommit`, clicking it turns it
@@ -11,20 +11,20 @@ export function Percent({
   small,
   max = 1.5,
   unit = true,
-  onCommit,
+  onCommit
 }: {
-  value: number;
-  small?: boolean;
+  value: number
+  small?: boolean
   /** Upper bound of the typed value (UI scale). */
-  max?: number;
+  max?: number
   /** Show the "%" sign after the number. */
-  unit?: boolean;
-  onCommit?: (value: number) => void;
+  unit?: boolean
+  onCommit?: (value: number) => void
 }) {
-  const [text, setText] = useState<string | null>(null);
-  const shown = Math.round(value * 100);
-  const className = cx("vol-pct", small && "small");
-  const sign = unit ? "%" : "";
+  const [text, setText] = useState<string | null>(null)
+  const shown = Math.round(value * 100)
+  const className = cx("vol-pct", small && "small")
+  const sign = unit ? "%" : ""
 
   if (!onCommit)
     return (
@@ -32,22 +32,27 @@ export function Percent({
         {shown}
         {sign}
       </span>
-    );
+    )
 
   if (text === null) {
     return (
-      <button type="button" className={cx(className, "editable")} title={t("volume.edit")} onClick={() => setText(String(shown))}>
+      <button
+        type="button"
+        className={cx(className, "editable")}
+        title={t("volume.edit")}
+        onClick={() => setText(String(shown))}
+      >
         {shown}
         {sign}
       </button>
-    );
+    )
   }
 
   const commit = () => {
-    const typed = parseFloat(text.replace(",", ".").replace("%", ""));
-    if (Number.isFinite(typed)) onCommit(Math.min(max, Math.max(0, typed / 100)));
-    setText(null);
-  };
+    const typed = parseFloat(text.replace(",", ".").replace("%", ""))
+    if (Number.isFinite(typed)) onCommit(Math.min(max, Math.max(0, typed / 100)))
+    setText(null)
+  }
 
   return (
     <span className={cx(className, "editing")}>
@@ -56,19 +61,19 @@ export function Percent({
         value={text}
         inputMode="decimal"
         autoFocus
-        onFocus={(e) => e.currentTarget.select()}
-        onChange={(e) => setText(e.currentTarget.value)}
+        onFocus={e => e.currentTarget.select()}
+        onChange={e => setText(e.currentTarget.value)}
         onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.currentTarget.blur();
+        onKeyDown={e => {
+          if (e.key === "Enter") e.currentTarget.blur()
           if (e.key === "Escape") {
             // Don't let the app-wide Escape handler clear the selection too.
-            e.stopPropagation();
-            setText(null);
+            e.stopPropagation()
+            setText(null)
           }
         }}
       />
       {sign}
     </span>
-  );
+  )
 }

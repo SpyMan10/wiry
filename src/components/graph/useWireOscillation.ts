@@ -1,13 +1,13 @@
-import { RefObject, useEffect } from "react";
-import { peakToUnit, subscribeLevels } from "../meter/levels";
-import { WireCurve, wirePath, wireWave } from "./wireGeometry";
+import { RefObject, useEffect } from "react"
+import { peakToUnit, subscribeLevels } from "../meter/levels"
+import { WireCurve, wirePath, wireWave } from "./wireGeometry"
 
 /** Phase speed of the travelling wave (radians per second). */
-const SPEED = 12.6;
+const SPEED = 12.6
 /** Keep oscillating this long after the last sound, so short gaps don't stop the animation. */
-const HOLD_MS = 600;
+const HOLD_MS = 600
 
-const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
 /**
  * Makes a wire oscillate while audio flows through it. Purely visual: the amplitude is always
@@ -15,47 +15,51 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
  * (the sonographs show the actual level). Animates the path directly at display rate, outside
  * React, and goes back to the plain curve once silent for HOLD_MS.
  */
-export function useWireOscillation(pathRef: RefObject<SVGPathElement | null>, curve: WireCurve, levelNode: number) {
-  const { x1, y1, x2, y2 } = curve;
+export function useWireOscillation(
+  pathRef: RefObject<SVGPathElement | null>,
+  curve: WireCurve,
+  levelNode: number
+) {
+  const { x1, y1, x2, y2 } = curve
 
   useEffect(() => {
-    const path = pathRef.current;
-    if (!path || reducedMotion()) return;
-    const c = { x1, y1, x2, y2 };
-    const wave = wireWave(c);
+    const path = pathRef.current
+    if (!path || reducedMotion()) return
+    const c = { x1, y1, x2, y2 }
+    const wave = wireWave(c)
     // Start from the current geometry: the wire may have moved (resized window…) while a
     // previous run of this effect was animating it.
-    path.setAttribute("d", wirePath(c));
-    let lastSound = -Infinity;
-    let phase = 0;
-    let last = 0;
-    let frame: number | null = null;
+    path.setAttribute("d", wirePath(c))
+    let lastSound = -Infinity
+    let phase = 0
+    let last = 0
+    let frame: number | null = null
 
     const tick = (now: number) => {
       if (now - lastSound > HOLD_MS) {
-        path.setAttribute("d", wirePath(c));
-        frame = null;
-        last = 0;
-        return;
+        path.setAttribute("d", wirePath(c))
+        frame = null
+        last = 0
+        return
       }
-      phase += (SPEED * (last ? Math.min(now - last, 100) : 16)) / 1000;
-      last = now;
-      path.setAttribute("d", wave(1, phase));
-      frame = requestAnimationFrame(tick);
-    };
+      phase += (SPEED * (last ? Math.min(now - last, 100) : 16)) / 1000
+      last = now
+      path.setAttribute("d", wave(1, phase))
+      frame = requestAnimationFrame(tick)
+    }
 
-    const unsubscribe = subscribeLevels((levels) => {
+    const unsubscribe = subscribeLevels(levels => {
       // Anything above the meters' floor (-60 dB) counts as flowing.
-      if (peakToUnit(levels[levelNode] ?? 0) === 0) return;
-      lastSound = performance.now();
-      if (frame === null) frame = requestAnimationFrame(tick);
-    });
+      if (peakToUnit(levels[levelNode] ?? 0) === 0) return
+      lastSound = performance.now()
+      if (frame === null) frame = requestAnimationFrame(tick)
+    })
 
     // No reset to the plain curve here: on a geometry change it would write the *old* curve
     // over the new one React just rendered. The next run (or React) draws the right one.
     return () => {
-      unsubscribe();
-      if (frame !== null) cancelAnimationFrame(frame);
-    };
-  }, [pathRef, x1, y1, x2, y2, levelNode]);
+      unsubscribe()
+      if (frame !== null) cancelAnimationFrame(frame)
+    }
+  }, [pathRef, x1, y1, x2, y2, levelNode])
 }

@@ -1,20 +1,25 @@
-import { t } from "../../i18n";
-import { Icon } from "../ui/Icon";
+import { t } from "../../i18n"
+import { Icon } from "../ui/Icon"
 
 /** Thin vertical strip shown in place of a folded side panel. */
 export function FoldRail({
   side,
   icon,
   label,
-  onUnfold,
+  onUnfold
 }: {
-  side: "left" | "right";
-  icon: string;
-  label: string;
-  onUnfold: () => void;
+  side: "left" | "right"
+  icon: string
+  label: string
+  onUnfold: () => void
 }) {
   return (
-    <button type="button" className={`fold-rail ${side}`} title={t("fold.expand", { label })} onClick={onUnfold}>
+    <button
+      type="button"
+      className={`fold-rail ${side}`}
+      title={t("fold.expand", { label })}
+      onClick={onUnfold}
+    >
       <span className="rail-head">
         <Icon name={side === "left" ? "chevron-bar-right" : "chevron-bar-left"} />
       </span>
@@ -23,5 +28,5 @@ export function FoldRail({
         <span className="rail-label">{label}</span>
       </span>
     </button>
-  );
+  )
 }

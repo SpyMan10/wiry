@@ -1,18 +1,18 @@
-import { t } from "../../i18n";
-import { CATEGORY_ICONS, NodeCategory, categoryLabel } from "../../pipewire";
-import { Icon } from "../ui/Icon";
+import { t } from "../../i18n"
+import { CATEGORY_ICONS, NodeCategory, categoryLabel } from "../../pipewire"
+import { Icon } from "../ui/Icon"
 
 /** Foldable category title: chevron, icon, label and node count. */
 export function GroupHeader({
   category,
   count,
   open,
-  onToggle,
+  onToggle
 }: {
-  category: NodeCategory;
-  count: number;
-  open: boolean;
-  onToggle: () => void;
+  category: NodeCategory
+  count: number
+  open: boolean
+  onToggle: () => void
 }) {
   return (
     <h3>
@@ -29,5 +29,5 @@ export function GroupHeader({
         <span className="group-count">{count}</span>
       </button>
     </h3>
-  );
+  )
 }

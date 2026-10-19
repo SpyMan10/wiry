@@ -224,7 +224,6 @@ button:hover {
 
 /* ---------- Node list ---------- */
 
-
 /* Search bar: a full-width strip glued under the header, no inner gaps. */
 .toolbar {
   flex: none;
@@ -341,7 +340,9 @@ button:hover {
   background: var(--card);
   border: 1px solid var(--accent);
   border-radius: 10px;
-  box-shadow: 0 0 0 4px var(--accent-soft), 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 0 0 4px var(--accent-soft),
+    0 10px 30px rgba(0, 0, 0, 0.5);
   animation: armed-hint-in 0.15s ease-out;
 }
 .armed-hint-icon {
@@ -393,7 +394,9 @@ button:hover {
   border-color: var(--accent);
 }
 .node-card {
-  transition: border-color 0.12s, box-shadow 0.12s;
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
 }
 .node-card.armed {
   border-color: var(--accent);
@@ -701,7 +704,8 @@ button:hover {
 .slider::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
-  background: linear-gradient(
+  background:
+    linear-gradient(
       var(--slider-dir),
       transparent calc(var(--unity) - 1px),
       var(--muted) calc(var(--unity) - 1px),
@@ -711,7 +715,8 @@ button:hover {
     linear-gradient(var(--slider-dir), var(--slider-fill) var(--fill), var(--border) var(--fill));
 }
 .slider.over::-webkit-slider-runnable-track {
-  background: linear-gradient(
+  background:
+    linear-gradient(
       var(--slider-dir),
       transparent calc(var(--unity) - 1px),
       var(--muted) calc(var(--unity) - 1px),
@@ -1098,7 +1103,10 @@ body.resizing-y * {
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.7);
   color: #7dff9b;
-  font: 11px ui-monospace, "JetBrains Mono", monospace;
+  font:
+    11px ui-monospace,
+    "JetBrains Mono",
+    monospace;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
 }
@@ -1198,7 +1206,11 @@ body.resizing-y * {
 }
 /* Hardware sliders top out at 100 %: no unity mark. */
 .slider.no-unity::-webkit-slider-runnable-track {
-  background: linear-gradient(var(--slider-dir), var(--slider-fill) var(--fill), var(--border) var(--fill));
+  background: linear-gradient(
+    var(--slider-dir),
+    var(--slider-fill) var(--fill),
+    var(--border) var(--fill)
+  );
 }
 
 /* ---------- Refresh (PipeWire resync) ---------- */

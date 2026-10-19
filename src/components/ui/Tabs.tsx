@@ -1,25 +1,25 @@
-import { Icon } from "./Icon";
-import { cx } from "./cx";
+import { Icon } from "./Icon"
+import { cx } from "./cx"
 
 export interface TabDef<T extends string> {
-  id: T;
-  label: string;
-  icon: string;
+  id: T
+  label: string
+  icon: string
 }
 
 /** Tab strip sized to sit in a panel header. */
 export function Tabs<T extends string>({
   tabs,
   active,
-  onChange,
+  onChange
 }: {
-  tabs: TabDef<T>[];
-  active: T;
-  onChange: (id: T) => void;
+  tabs: TabDef<T>[]
+  active: T
+  onChange: (id: T) => void
 }) {
   return (
     <div className="tabs" role="tablist">
-      {tabs.map((tab) => (
+      {tabs.map(tab => (
         <button
           key={tab.id}
           type="button"
@@ -32,5 +32,5 @@ export function Tabs<T extends string>({
         </button>
       ))}
     </div>
-  );
+  )
 }

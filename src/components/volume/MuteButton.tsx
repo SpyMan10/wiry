@@ -1,6 +1,6 @@
-import { t } from "../../i18n";
-import { Button } from "../ui/Button";
-import { cx } from "../ui/cx";
+import { t } from "../../i18n"
+import { Button } from "../ui/Button"
+import { cx } from "../ui/cx"
 
 export function MuteButton({ muted, onToggle }: { muted: boolean; onToggle: () => void }) {
   return (
@@ -10,5 +10,5 @@ export function MuteButton({ muted, onToggle }: { muted: boolean; onToggle: () =
       title={muted ? t("volume.unmute") : t("volume.mute")}
       onClick={onToggle}
     />
-  );
+  )
 }

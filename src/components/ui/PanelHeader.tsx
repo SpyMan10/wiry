@@ -1,17 +1,17 @@
-import { ReactNode } from "react";
-import { Icon } from "./Icon";
+import { ReactNode } from "react"
+import { Icon } from "./Icon"
 
 /** Fixed-height panel title bar: icon, title, optional count, then actions. */
 export function PanelHeader({
   icon,
   title,
   count,
-  children,
+  children
 }: {
-  icon: string;
-  title: string;
-  count?: number;
-  children?: ReactNode;
+  icon: string
+  title: string
+  count?: number
+  children?: ReactNode
 }) {
   return (
     <header className="panel-header">
@@ -21,5 +21,5 @@ export function PanelHeader({
       {count !== undefined && <span className="count">{count}</span>}
       {children}
     </header>
-  );
+  )
 }

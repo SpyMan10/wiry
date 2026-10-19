@@ -1,4 +1,4 @@
-import { RefObject, useEffect } from "react";
+import { RefObject, useEffect } from "react"
 
 /**
  * Scrolls the element of `nodeId` (marked with `data-node-id`) into view inside `root`
@@ -7,14 +7,14 @@ import { RefObject, useEffect } from "react";
  */
 export function useRevealNode(root: RefObject<HTMLElement | null>, nodeId: number | null) {
   useEffect(() => {
-    if (nodeId === null) return;
+    if (nodeId === null) return
     let frame = requestAnimationFrame(() => {
       frame = requestAnimationFrame(() => {
         root.current
           ?.querySelector(`[data-node-id="${nodeId}"]`)
-          ?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
-      });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [root, nodeId]);
+          ?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" })
+      })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [root, nodeId])
 }

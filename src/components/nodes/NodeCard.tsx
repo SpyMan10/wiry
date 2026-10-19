@@ -1,17 +1,25 @@
-import { PwNode, PwPort, hasMeter, nodeCategory } from "../../pipewire";
-import { useUiState } from "../../state";
-import { Sonograph } from "../meter/Sonograph";
-import { cx } from "../ui/cx";
-import { NodeHeader } from "./NodeHeader";
-import { PortList } from "./PortList";
-import { Patching } from "./usePatching";
+import { PwNode, PwPort, hasMeter, nodeCategory } from "../../pipewire"
+import { useUiState } from "../../state"
+import { Sonograph } from "../meter/Sonograph"
+import { cx } from "../ui/cx"
+import { NodeHeader } from "./NodeHeader"
+import { PortList } from "./PortList"
+import { Patching } from "./usePatching"
 
 /** A node of the list: header, then level meter + ports, then volume. */
-export function NodeCard({ node, ports, patch }: { node: PwNode; ports: PwPort[]; patch: Patching }) {
-  const { selectedNode, setSelectedNode } = useUiState();
-  const ins = ports.filter((p) => p.direction === "in");
-  const outs = ports.filter((p) => p.direction === "out");
-  const metered = hasMeter(node);
+export function NodeCard({
+  node,
+  ports,
+  patch
+}: {
+  node: PwNode
+  ports: PwPort[]
+  patch: Patching
+}) {
+  const { selectedNode, setSelectedNode } = useUiState()
+  const ins = ports.filter(p => p.direction === "in")
+  const outs = ports.filter(p => p.direction === "out")
+  const metered = hasMeter(node)
 
   return (
     <div
@@ -20,7 +28,7 @@ export function NodeCard({ node, ports, patch }: { node: PwNode; ports: PwPort[]
         "node-card",
         `cat-${nodeCategory(node)}`,
         selectedNode === node.id && "selected",
-        patch.armedNode === node.id && "armed",
+        patch.armedNode === node.id && "armed"
       )}
     >
       <NodeHeader
@@ -40,5 +48,5 @@ export function NodeCard({ node, ports, patch }: { node: PwNode; ports: PwPort[]
         <PortList ins={ins} outs={outs} patch={patch} />
       </div>
     </div>
-  );
+  )
 }

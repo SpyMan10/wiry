@@ -1,19 +1,25 @@
-import { useState } from "react";
-import { createPortal } from "react-dom";
-import { t } from "../../i18n";
-import { GraphSnapshot } from "../../pipewire";
-import { useNodeProps } from "../../hooks/useNodeProps";
-import { useUiState } from "../../state";
-import { EmptyState } from "../ui/EmptyState";
-import { SearchField } from "../ui/SearchField";
-import { PropertyTable } from "./PropertyTable";
+import { useState } from "react"
+import { createPortal } from "react-dom"
+import { t } from "../../i18n"
+import { GraphSnapshot } from "../../pipewire"
+import { useNodeProps } from "../../hooks/useNodeProps"
+import { useUiState } from "../../state"
+import { EmptyState } from "../ui/EmptyState"
+import { SearchField } from "../ui/SearchField"
+import { PropertyTable } from "./PropertyTable"
 
 /** Every PipeWire property of the selected node, with a filter in the panel header. */
-export function PropertiesTab({ graph, toolsSlot }: { graph: GraphSnapshot; toolsSlot: HTMLElement | null }) {
-  const { selectedNode } = useUiState();
-  const [filter, setFilter] = useState("");
-  const props = useNodeProps(selectedNode, graph);
-  const node = graph.nodes.find((n) => n.id === selectedNode);
+export function PropertiesTab({
+  graph,
+  toolsSlot
+}: {
+  graph: GraphSnapshot
+  toolsSlot: HTMLElement | null
+}) {
+  const { selectedNode } = useUiState()
+  const [filter, setFilter] = useState("")
+  const props = useNodeProps(selectedNode, graph)
+  const node = graph.nodes.find(n => n.id === selectedNode)
 
   return (
     <>
@@ -26,10 +32,14 @@ export function PropertiesTab({ graph, toolsSlot }: { graph: GraphSnapshot; tool
               {props && <span className="count"> · {Object.keys(props).length}</span>}
             </span>
             <div className="header-field">
-              <SearchField value={filter} onChange={setFilter} placeholder={t("properties.filter")} />
+              <SearchField
+                value={filter}
+                onChange={setFilter}
+                placeholder={t("properties.filter")}
+              />
             </div>
           </>,
-          toolsSlot,
+          toolsSlot
         )}
       <div className="scroll bottom-scroll">
         {!node ? (
@@ -39,5 +49,5 @@ export function PropertiesTab({ graph, toolsSlot }: { graph: GraphSnapshot; tool
         )}
       </div>
     </>
-  );
+  )
 }

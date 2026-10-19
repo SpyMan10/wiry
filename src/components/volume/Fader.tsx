@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
-import { cx } from "../ui/cx";
-import { Percent } from "./Percent";
-import { VolumeSlider } from "./VolumeSlider";
+import { ReactNode } from "react"
+import { cx } from "../ui/cx"
+import { Percent } from "./Percent"
+import { VolumeSlider } from "./VolumeSlider"
 
 /**
  * Vertical slider with its editable value above and a footer below (a label, or a button for
@@ -12,14 +12,14 @@ export function Fader({
   onChange,
   onEnd,
   footer,
-  variant = "master",
+  variant = "master"
 }: {
-  value: number;
-  onChange: (v: number) => void;
-  onEnd: () => void;
-  footer?: ReactNode;
+  value: number
+  onChange: (v: number) => void
+  onEnd: () => void
+  footer?: ReactNode
   /** "master": highlighted container; "channel": plain, smaller, duller fill. */
-  variant?: "master" | "channel";
+  variant?: "master" | "channel"
 }) {
   return (
     <div className={cx("fader", variant)}>
@@ -27,13 +27,13 @@ export function Fader({
         value={value}
         small={variant === "channel"}
         unit={false}
-        onCommit={(v) => {
-          onChange(v);
-          onEnd();
+        onCommit={v => {
+          onChange(v)
+          onEnd()
         }}
       />
       <VolumeSlider value={value} onChange={onChange} onEnd={onEnd} orientation="vertical" />
       <div className="fader-footer">{footer}</div>
     </div>
-  );
+  )
 }
